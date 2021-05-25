@@ -1,0 +1,15 @@
+---
+
+- name: manage DNS records
+  community.general.ipa_dnsrecord:
+    ipa_host:        "{{ dns.server | required }}"
+    ipa_pass:        "{{ dns.password | required }}"
+    validate_certs:  "{{ dns.validate_certs | default('false') }}"
+    zone_name:       "{{ record.zone | required }}"
+    record_name:     "{{ record.name | required }}"
+    record_value:    "{{ record.value | required }}"
+    record_type:     "{{ record.type | required }}"
+  loop_control:
+    loop_var: record
+  loop: "{{ dns.records }}"
+  delegate_to: "{{ delegate_host }}"
