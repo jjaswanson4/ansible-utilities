@@ -1,0 +1,68 @@
+---
+
+- name: get info about the vm
+  block:
+    - name: search for VM
+      vmware.vmware_rest.vcenter_vm_info:
+        vcenter_hostname: "{{ vcenter.server }}"
+        vcenter_username: "{{ vcenter.username }}"
+        vcenter_password: "{{ vcenter.password }}"
+        vcenter_validate_certs: no
+        filter_names: "{{ inventory_hostname }}"
+      register: vm_search_results
+    - name: get VM info
+      vmware.vmware_rest.vcenter_vm_info:
+        vcenter_hostname: "{{ vcenter.server }}"
+        vcenter_username: "{{ vcenter.username }}"
+        vcenter_password: "{{ vcenter.password }}"
+        vcenter_validate_certs: no
+        vm: "{{ vm_search_results.value[0].vm }}"
+      register: vm_info
+    - name: grab the cdrom devices on the guest
+      vmware.vmware_rest.vcenter_vm_hardware_cdrom_info:
+        vcenter_hostname: "{{ vcenter.server }}"
+        vcenter_username: "{{ vcenter.username }}"
+        vcenter_password: "{{ vcenter.password }}"
+        vcenter_validate_certs: no
+        vm: '{{ vm_info.id }}'
+      register: vm_cdrom
+  delegate_to: "{{ delegate_host }}"
+
+- name: remove the cdrom drive from the vm
+  block:
+    - name: shut down the VM
+      community.vmware.vmware_guest_powerstate:
+        hostname: "{{ vcenter.server }}"
+        username: "{{ vcenter.username }}"
+        password: "{{ vcenter.password }}"
+        validate_certs: no
+        moid: "{{ vm_info.id }}"
+        state: shutdown-guest
+    - name: wait for VM to fully go down
+      ansible.builtin.pause:
+        seconds: 30
+    - name: remove the cdrom
+      vmware.vmware_rest.vcenter_vm_hardware_cdrom:
+        vcenter_hostname: "{{ vcenter.server }}"
+        vcenter_username: "{{ vcenter.username }}"
+        vcenter_password: "{{ vcenter.password }}"
+        vcenter_validate_certs: no
+        vm: "{{ vm_search_results.value[0].vm }}"
+        label: CD/DVD drive 1
+        state: absent
+    - name: start the VM back up
+      vmware.vmware_rest.vcenter_vm_power:
+        vcenter_hostname: "{{ vcenter.server }}"
+        vcenter_username: "{{ vcenter.username }}"
+        vcenter_password: "{{ vcenter.password }}"
+        vcenter_validate_certs: no
+        vm: "{{ vm_search_results.value[0].vm }}"
+        state: start
+  when:
+    - vm_cdrom.value[0] is defined 
+  delegate_to: "{{ delegate_host }}"
+
+- name: wait for VM to come up
+  ansible.builtin.wait_for_connection:
+    timeout: 1800
+    sleep: 30

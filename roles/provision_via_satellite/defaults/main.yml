@@ -1,0 +1,4 @@
+---
+
+remove_cdrom: yes
+delegate_host: localhost

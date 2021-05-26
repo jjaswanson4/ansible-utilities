@@ -1,0 +1,9 @@
+---
+
+- import_tasks: provision-via-satellite.yml
+
+- name: include tasks to remove cdrom drive
+  include_tasks:
+    file: remove-cdrom.yml
+  when:
+    - remove_cdrom

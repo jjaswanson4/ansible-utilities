@@ -1,0 +1,43 @@
+---
+
+- name: check if host exists
+  redhat.satellite.host_info:
+    username:         "{{ provisioning.satellite.username }}"
+    password:         "{{ provisioning.satellite.password }}"
+    server_url:       "https://{{ provisioning.satellite.server | mandatory }}"
+    validate_certs:   "{{ provisioning.validate_certs | default('false') }}"
+    name:             "{{ inventory_hostname }}"
+  register: host_status
+  delegate_to: localhost
+
+- name: run provisioning tasks
+  block:
+    - name: provision virtual machines
+      redhat.satellite.host:
+        username:         "{{ provisioning.satellite.username }}"
+        password:         "{{ provisioning.satellite.password }}"
+        server_url:       "https://{{ provisioning.satellite.server | mandatory }}"
+        validate_certs:   "{{ provisioning.validate_certs | default('false') }}"
+        name:             "{{ inventory_hostname }}"
+        domain:           "{{ provisioning.dns_domain }}"
+        hostgroup:        "{{ provisioning.host_group }}"
+        provision_method: "{{ provisioning.method }}"
+        ip:               "{{ ip_address }}"
+        build:            "{{ provisioning.build | default('yes') }}"
+        managed:          "{{ provisioning.managed | default('yes') }}"
+        compute_attributes:
+          start:         "{{ provisioning.start | default('1') }}"
+          cpus:          "{{ provisioning.cpus }}"
+          memory_mb:     "{{ provisioning.memory_mb }}"
+        organization:    "{{ provisioning.organization }}"
+        location:        "{{ provisioning.location }}"
+      delegate_to: "{{ delegate_host }}"
+    - name: wait for VM to come up
+      ansible.builtin.wait_for_connection:
+        timeout: 1800
+        sleep: 30
+  when:
+    - not host_status.host
+
+- name: run the setup module
+  ansible.builtin.setup:
