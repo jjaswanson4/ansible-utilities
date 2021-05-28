@@ -1,0 +1,23 @@
+---
+
+- name: setup and run the tower installer
+  block:
+    - name: find the installer directory
+      ansible.builtin.find:
+        paths: /tmp/aap-installer/
+        patterns: "ansible*"
+        file_type: directory
+      register: installer_directory
+
+    - name: push our version of the inventory file
+      ansible.builtin.template:
+        src: templates/inventory.j2
+        dest: "{{ installer_directory | json_query('files[0].path') }}/inventory"
+        mode: '0644'
+
+    - name: run the setup script
+      ansible.builtin.script:
+        cmd: "{{ ansible_executable }} install.yml --inventory inventory"
+      args:
+        chdir: "{{ installer_directory | json_query('files[0].path') }}"
+  delegate_to: localhost

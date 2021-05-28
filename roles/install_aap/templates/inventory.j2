@@ -1,0 +1,41 @@
+[tower]
+{% if 'tower' in groups %}
+{% for host in groups['tower'] %}
+{{ host }} ansible_host={{ hostvars[host]['ansible_host'] }}
+{% endfor %}
+{% endif %}
+
+[automationhub]
+{% if 'automationhub' in groups %}
+{% for host in groups['automationhub'] %}
+{{ host }} ansible_host={{ hostvars[host]['ansible_host'] }}
+{% endfor %}
+{% endif %}
+
+[database]
+
+[all:vars]
+ansible_user={{ ansible_user }}
+ansible_password='{{ ansible_password }}'
+
+{% if 'tower' in groups %}
+# tower
+admin_password='{{ tower_install.admin_password }}'
+pg_host='{{ tower_install.pg.host }}'
+pg_port='{{ tower_install.pg.port }}'
+pg_database='{{ tower_install.pg.database }}'
+pg_username='{{ tower_install.pg.username }}'
+pg_password='{{ tower_install.pg.password }}'
+pg_sslmode='{{ tower_install.pg.sslmode }}'
+{% endif %}
+
+{% if 'automationhub' in groups %}
+# automationhub
+automationhub_admin_password='{{ automationhub_admin_password }}'
+automationhub_pg_host='{{ automationhub_pg_host }}'
+automationhub_pg_port='{{ automationhub_pg_port }}'
+automationhub_pg_database='{{ automationhub_pg_database }}'
+automationhub_pg_username='{{ automationhub_pg_username }}'
+automationhub_pg_password='{{ automationhub_pg_password }}'
+automationhub_pg_sslmode='{{automationhub_pg_sslmode }}'
+{% endif %}

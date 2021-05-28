@@ -1,0 +1,8 @@
+---
+
+- name: download the tower installer
+  ansible.builtin.get_url:
+    url: "https://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest.tar.gz"
+    dest: /tmp/
+  delegate_to: localhost
+  register: installer

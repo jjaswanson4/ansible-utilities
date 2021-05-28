@@ -1,0 +1,4 @@
+---
+
+dirty_extract: no
+ansible_executable: /usr/bin/ansible-playbook
