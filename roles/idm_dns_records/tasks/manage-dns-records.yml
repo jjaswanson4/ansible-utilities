@@ -13,3 +13,4 @@
     loop_var: record
   loop: "{{ dns.records }}"
   delegate_to: "{{ delegate_host }}"
+  throttle: 1
