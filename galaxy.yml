@@ -18,7 +18,6 @@ readme: README.md
 authors:
 - Josh Swanson <joshswanson@redhat.com>
 
-
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
 description: Collection of opinionated, purpose built roles for common ansible tasks.
