@@ -7,12 +7,6 @@ available_config_files:
     owner: root
     group: root
     mode: '0644'
-  - name: NetworkManager.conf
-    src: templates/NetworkManager.conf.j2
-    dest: /etc/NetworkManager/NetworkManager.conf
-    owner: root
-    group: root
-    mode: '0644'
   - name: resolv.conf
     src: templates/resolv.conf.j2
     dest: /etc/resolv.conf
