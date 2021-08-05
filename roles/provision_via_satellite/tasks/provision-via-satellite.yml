@@ -39,6 +39,7 @@
         sleep: 30
   when:
     - not host_status.host
+  throttle: "{{ throttle | default('1') }}"
 
 - name: run the setup module
   ansible.builtin.setup:
