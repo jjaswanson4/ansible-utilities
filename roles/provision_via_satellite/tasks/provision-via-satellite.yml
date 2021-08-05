@@ -9,6 +9,7 @@
     name:             "{{ inventory_hostname }}"
   register: host_status
   delegate_to: localhost
+  throttle: "{{ throttle | default('1') }}"
 
 - name: run provisioning tasks
   block:
