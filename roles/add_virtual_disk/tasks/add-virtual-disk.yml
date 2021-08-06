@@ -34,4 +34,5 @@
       loop_control:
         loop_var: new_disk
       loop: "{{ additional_storage }}"
+      ignore_errors: "{{ ignore_virtual_disk_errors | default('no') }}"
   delegate_to: "{{ delegate_host }}"
