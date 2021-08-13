@@ -3,5 +3,5 @@
 - name: set firewall to desired state
   ansible.builtin.service:
     name: "{{ firewall.name | default('firewalld') }}"
-    state: "{{ firewall.state | default('started' }}"
+    state: "{{ firewall.state | default('started') }}"
     enabled: "{{ firewall.enabled | default('yes') }}"
