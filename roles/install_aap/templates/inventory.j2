@@ -1,6 +1,6 @@
-[tower]
-{% if 'tower' in groups %}
-{% for host in groups['tower'] %}
+[automationcontroller]
+{% if 'controller' in groups %}
+{% for host in groups['controller'] %}
 {{ host }} ansible_host={{ hostvars[host]['ansible_host'] }}
 {% endfor %}
 {% endif %}
@@ -18,15 +18,15 @@
 ansible_user={{ ansible_user }}
 ansible_password='{{ ansible_password }}'
 
-{% if 'tower' in groups %}
-# tower
-admin_password='{{ tower_install.admin_password }}'
-pg_host='{{ tower_install.pg.host }}'
-pg_port='{{ tower_install.pg.port }}'
-pg_database='{{ tower_install.pg.database }}'
-pg_username='{{ tower_install.pg.username }}'
-pg_password='{{ tower_install.pg.password }}'
-pg_sslmode='{{ tower_install.pg.sslmode }}'
+{% if 'controller' in groups %}
+# controller
+admin_password='{{ controller_install.admin_password }}'
+pg_host='{{ controller_install.pg.host | default('') }}'
+pg_port='{{ controller_install.pg.port | default('') }}'
+pg_database='{{ controller_install.pg.database | default('awx') }}'
+pg_username='{{ controller_install.pg.username | default('awx') }}'
+pg_password='{{ controller_install.pg.password }}'
+pg_sslmode='{{ controller_install.pg.sslmode | default('prefer') }}'
 {% endif %}
 
 {% if 'automationhub' in groups %}

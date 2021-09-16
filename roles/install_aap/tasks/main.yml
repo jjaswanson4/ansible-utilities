@@ -1,13 +1,13 @@
 ---
 
-- name: check for existing tower install
+- name: check for existing controller install
   ansible.builtin.shell: /usr/bin/tower-manage check
-  register: tower_check
+  register: controller_check
   ignore_errors: true
   changed_when: false
   when:
-    - "'tower' in groups"
-    - inventory_hostname in groups['tower']
+    - "'controller' in groups"
+    - inventory_hostname in groups['controller']
 
 - name: include install tasks
   ansible.builtin.include_tasks:
@@ -19,4 +19,4 @@
     - extract-installer.yml
     - run-installer.yml
   when:
-    - tower_check.failed
+    - controller_check.failed
